@@ -222,7 +222,7 @@ named-checkconf
 
 named-checkzone sitioa /etc/bind/rd.sitioa.com
 
-4. Servidors web y ftp
+4. Servidores web y ftp
 
 Asegurate de estar conectado con red interna
 Configuracion de la tarjeta de red
