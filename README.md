@@ -7,7 +7,8 @@ Añadir los discos duros con los que vamos a hacer el RAID en la maquina virutal
 
 
 
-Iniciar la Maquina virtual y seguir los pasos hasta llegar a particionado de disco. Escogemos la opcion manual. En este caso el servidor dns le puse un raid0 con 2 discos duros mas area de intercambio y a los servidores web raid5 con 4 discos duros y area de intercambio.
+Iniciar la Maquina virtual y seguir los pasos hasta llegar a particionado de disco. Escogemos la opcion manual.
+En este caso el servidor dns le puse un raid0 con 2 discos duros mas area de intercambio y a los servidores web raid5 con 4 discos duros y area de intercambio.
 Continuar con la instalación
 
 2. Configurar router en ubuntu
@@ -15,6 +16,7 @@ Continuar con la instalación
 Comprobar que la configuracion de las 2 tarjetas de red esten en adaptador puente y red interna respectivamente. 
 
 En ubuntu configurar las interfaces en el siguiente fichero
+
 sudo nano /etc/network/interfaces
 
 Nos mostrara:
@@ -26,14 +28,17 @@ auto lo
 iface lo inet looback
 
 -configuracion de la primera interfaz de red interna
+
 auto enp0s3
+
 iface enp0s3 inet static
-      address 192.168.10.254
-      netmask 255.255.255.0
-      network 192.168.10.0
-      broadcast 192.168.10.255
+	address 192.168.10.254
+	netmask 255.255.255.0
+	network 192.168.10.0
+	broadcast 192.168.10.255
 
 -configuracion de la segunda interfaz red externa
+
 auto enp0s8
 iface enp0s8 inet dhcp
 
