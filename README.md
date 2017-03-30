@@ -3,31 +3,21 @@
 1. CONFIGURAR RAID
 
 Usar una imagen iso de UBUNTU para insertarla en la maquina virtual.
-
-
-Añadir los discos duros con los que se van a hacer el RAID
+Añadir los discos duros con los que vamos a hacer el RAID en la maquina virutal
 
 
 
-Iniciar la Maquina virtual y seguir los pasos hasta llegar a particionado de disco. Escoge la opcion manual y usar la configuracion que se muestra abajo. En mi caso el servidor dns le puse un raid0 con 2 discos duros + area de intercambio y a los servidores web raid5 con 4 discos duros + area de intercambio
-
-Configuracion RAID 0 
-
-Configuracion RAID 5 
-
-Continuar la instalación
+Iniciar la Maquina virtual y seguir los pasos hasta llegar a particionado de disco. Escogemos la opcion manual. En este caso el servidor dns le puse un raid0 con 2 discos duros mas area de intercambio y a los servidores web raid5 con 4 discos duros y area de intercambio.
+Continuar con la instalación
 
 2. Configurar router en ubuntu
 
-Antes de nada asegurate de la configuracion de las 2 tarjetas de red en vbox.
-
-
-
-
+Comprobar que la configuracion de las 2 tarjetas de red esten en adaptador puente y red interna respectivamente. 
 
 En ubuntu configurar las interfaces en el siguiente fichero
 sudo nano /etc/network/interfaces
-ifconfig -a Muestra las tarjetas de red de tu ordenador
+
+Nos mostrara:
 
 -El signo '#' es para comentar una linea
 -configuracion de loopback network interfaces
@@ -48,43 +38,41 @@ auto enp0s8
 iface enp0s8 inet dhcp
 
 
-Configura el reenvio de paquetes sudo nano /etc/sysctl.conf
-Buscar la linea
+Configura el reenvio de paquetes sudo nano /etc/sysctl.conf y haremos lo siguiente
+Buscamos la linea
 -net.ipv4.ip_forward=1
-Quitale la almoadilla devería de quedar asín
-net.ipv4.ip_forward=1
+Quitarle la almoadilla debería de quedar asi
+-net.ipv4.ip_forward=1
 
-Por ultimo pasaremos los paquetes que vengan de la red interna a la externa
-
-Vamos a crear un peque?os script para que lo haga
+Por ultimo pasaremos los paquetes que vengan de la red interna a la externa.Vamos a crear un script; 
 
 Nos situamos en nuestra carpeta de usuario
 cd $HOME
 
-Creamos un fichero .sh
+Crearemos un fichero .sh
 sudo nano up-router.sh
 
-Escribimos la siguiente linea
+Escribimos la linea:
 iptables -t nat -A POSTROUTING -s 192.168.10.0/24 -o enp0s8 -j MASQUERADE
 
-Lo guardamos, Reiniciamos las tarjetas de red
+Lo guardamos,y, reiniciamos las tarjetas de red
 sudo /etc/init.d/network restart
 
-Ahora iniciamos el script
+Ahora iniciamos el script con el siguiente comando;
 sudo sh $HOME/up-router.sh
 
-Para que el script se execute cadavez que se reinicie el ordenador hacemos lo siguiente
+Para que el script se ejecute cadavez que se reinicie el ordenador hacemos lo siguiente
 
-Cambiamos los permisos del fichero
+Cambiamos los permisos del fichero de la siguiente manera:
 sudo chmod 755 $HOME/up-router
 
 Movemos el fichero a init.d sudo mv $HOME/up-router.sh /etc/init.d
 
-Ya estaria todo configurado si llegado a este punto no funciona prueba a reiniciar la maquina virtual
+Ya esta todo configurado si no funciona probar reiniciando la maquina virtual
 
 3. Configuracion servidor de DNS
 
-Asegurate de estar conectado com red interna
+Asegurarse de estar conectado con red interna
 Configuracion de la tarjeta de red
 sudo nano /etc/network/interfaces
 ifconfig -a Muestra las tarjetas de red de tu ordenador
@@ -102,12 +90,14 @@ iface enp0s3 inet static
       netmask 255.255.255.0
       gateway 192.168.10.254
       dns-nameservers 192.168.10.254 8.8.8.8
+      
+      
 Instalar bind9 es el servidor de dns para ubuntu SERVER
 sudo apt-get install bind9
 
 Ahora vamos a configurar los archivos de configuración de bind9
 
-El primero el el named.conf.local
+Primero el named.conf.local
 sudo nano /etc/bind/named.conf.local
 
 
@@ -172,7 +162,7 @@ $TTL 38400
 servidor01.sitiob.net. IN A 192.168.10.3
 WWW IN CNAME servidor01.sitiob.net.
 
-Archivo /etc/bind/rd.sitioc.net con el siguiente comando
+Abrir el archivo /etc/bind/rd.sitioc.net con el siguiente comando:
 sudo nano /etc/bind/rd.sitioc.net
 
 
@@ -190,7 +180,7 @@ $TTL 38400
 servidor01.sitioc.net. IN A 192.168.10.4
 WWW IN CNAME servidor01.sitioc.net.
 
-Archivo resolucion inversa /etc/bind/ri.192.168.10 con el siguiento comando
+Archivo resolucion inversa /etc/bind/ri.192.168.10 con el siguiente comando
 sudo nano /etc/bind/ri.192.168.10
 
 
@@ -208,7 +198,7 @@ $TTL 38400
 2 IN PTR servidor01.sitioa.com.
 3 IN PTR servidor01.sitiob.net.
 4 IN PTR servidor01.sitioc.net.
-Despues tienes que configurar en caso de que el servidor no conozca los nombres de dominio le pregunte a otro servidor.
+Despues hay que configurar en caso de que el servidor no conozca los nombres de dominio al preguntar al otro servidor.
 sudo nano /etc/bind/named.conf.option
 
 
@@ -219,7 +209,7 @@ forwarders {
         8.8.4.4;
 };
 
-Una vez listo reiniciaremos bind9
+En cuanto terminamos reiniciaremos bind9
 sudo /etc/init.d/bind9 restart
 Para comprobar si tiene fallos podemos usar estos comandos
 
@@ -232,7 +222,7 @@ named-checkzone sitioa /etc/bind/rd.sitioa.com
 Asegurate de estar conectado con red interna
 Configuracion de la tarjeta de red
 sudo nano /etc/network/interfaces
-ifconfig -a Muestra las tarjetas de red de tu ordenador
+ifconfig -a Nos muestra las tarjetas de red de tu ordenador
 
 -El signo '#' es para comentar una linea
 -configuracion de loopback network interfaces
